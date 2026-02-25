@@ -1,0 +1,359 @@
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محرر الأكواد 3 - نسخة معدلة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+        .color-circle { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .color-circle.selected { border-color: white; transform: scale(1.1); }
+        .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .btn-responsive { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-responsive:active { transform: scale(0.95); }
+        .btn-responsive:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        
+        .folder-gradient {
+            background: linear-gradient(135deg, #ff9800 0%, #ffeb3b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        @keyframes bounce-in {
+            0% { opacity: 0; transform: translate(-50%, 20px); }
+            50% { opacity: 1; transform: translate(-50%, -5px); }
+            100% { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-bounce-in { animation: bounce-in 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-cairo overflow-hidden h-screen flex flex-col">
+
+    <div class="w-full h-full flex flex-col p-0 md:p-4 lg:p-6 transition-all duration-300">
+        <div class="w-full max-w-7xl mx-auto bg-black border-b md:border border-gray-800 md:rounded-xl flex-1 flex flex-col shadow-2xl overflow-hidden ring-1 ring-gray-800">
+            
+            <!-- الشريط العلوي -->
+            <div class="p-2 md:p-4 lg:p-5 border-b border-gray-800 flex justify-between items-center bg-black shrink-0">
+                <div class="flex gap-2 md:gap-4 overflow-x-auto no-scrollbar items-center">
+                    <button id="html-btn" class="btn-responsive flex items-center gap-2 bg-gray-800 px-3 py-2 md:px-6 md:py-3 rounded-lg group">
+                        <i class="fas fa-file-code text-red-500 text-sm md:text-xl lg:text-2xl group-hover:scale-110"></i> 
+                        <span class="text-red-500 font-bold text-xs md:text-lg lg:text-xl">HTML</span>
+                    </button>
+                    <button id="css-btn" class="btn-responsive flex items-center gap-2 px-3 py-2 md:px-6 md:py-3 rounded-lg group">
+                        <i class="fas fa-paint-brush text-blue-500 text-sm md:text-xl lg:text-2xl group-hover:scale-110"></i> 
+                        <span class="text-blue-500 font-bold text-xs md:text-lg lg:text-xl">CSS</span>
+                    </button>
+                    <button id="js-btn" class="btn-responsive flex items-center gap-2 px-3 py-2 md:px-6 md:py-3 rounded-lg group">
+                        <i class="fas fa-cogs text-yellow-500 text-sm md:text-xl lg:text-2xl group-hover:scale-110"></i> 
+                        <span class="text-yellow-500 font-bold text-xs md:text-lg lg:text-xl">JS</span>
+                    </button>
+                </div>
+
+                <div class="flex gap-2 md:gap-4 shrink-0 items-center">
+                    <button id="brush-btn" class="btn-responsive p-2 md:p-3 lg:p-4 hover:bg-gray-800 rounded-full">
+                        <i id="brush-icon" class="fas fa-palette text-sm md:text-xl lg:text-2xl text-gray-400"></i>
+                    </button>
+                    <button id="run-btn" class="btn-responsive bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-play text-sm md:text-xl lg:text-2xl ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- شريط الأدوات السفلي -->
+            <div class="px-3 py-2 md:px-5 md:py-4 border-b border-gray-800 flex justify-between items-center bg-gray-950 shrink-0 overflow-x-auto no-scrollbar">
+                <div id="file-name-container" class="flex items-center gap-2 text-xs md:text-lg lg:text-xl" dir="ltr"></div>
+                
+                <div class="flex gap-2 md:gap-3 lg:gap-4 items-center justify-end">
+                    <button id="upload-btn" class="btn-responsive bg-purple-600 hover:bg-purple-700 text-white p-2 md:p-3 lg:p-4 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-upload text-sm md:text-xl"></i>
+                        <span class="hidden md:inline text-sm font-semibold">رفع ملف/ZIP</span>
+                    </button>
+                    
+                    <div class="w-px h-6 bg-gray-800 mx-1"></div>
+
+                    <button id="copy-btn" class="btn-responsive bg-green-600 hover:bg-green-700 text-white p-2 md:p-3 lg:p-4 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-copy text-sm md:text-xl"></i>
+                        <span class="hidden md:inline text-sm font-semibold">نسخ</span>
+                    </button>
+                    <button id="paste-btn" class="btn-responsive bg-amber-600 hover:bg-amber-700 text-white p-2 md:p-3 lg:p-4 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-paste text-sm md:text-xl"></i>
+                        <span class="hidden md:inline text-sm font-semibold">لصق</span>
+                    </button>
+                    
+                    <div class="w-px h-6 bg-gray-800 mx-1"></div>
+
+                    <button id="delete-btn" class="btn-responsive bg-red-600 hover:bg-red-700 text-white p-2 md:p-3 lg:p-4 rounded-lg">
+                        <i class="fas fa-trash-alt text-sm md:text-xl"></i>
+                    </button>
+                    
+                    <button id="open-dl-modal" class="btn-responsive bg-cyan-600 hover:bg-cyan-700 text-white p-2 md:p-3 lg:p-4 rounded-lg ml-1 flex items-center gap-2 shadow-lg">
+                        <i class="fas fa-download text-sm md:text-xl"></i>
+                        <span class="hidden md:inline text-sm font-semibold">تنزيل</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- المحرر -->
+            <div class="relative flex-1 bg-[#1e1e1e]">
+                <textarea id="code-editor" class="w-full h-full p-4 md:p-6 lg:p-8 bg-[#1e1e1e] text-gray-300 font-mono text-sm md:text-base lg:text-lg resize-none focus:outline-none placeholder-gray-600" placeholder="// ابدأ البرمجة هنا..." dir="ltr" spellcheck="false"></textarea>
+                <div class="absolute bottom-4 right-4 opacity-10 pointer-events-none">
+                    <i id="bg-icon" class="fas fa-code text-6xl md:text-8xl lg:text-9xl text-gray-500"></i>
+                </div>
+            </div>
+            <input id="file-upload" type="file" class="hidden" accept=".html,.css,.js,.txt,.zip">
+        </div>
+    </div>
+
+    <!-- نافذة اختيار اللون -->
+    <div id="color-picker-dialog" class="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden z-[100]">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-80 shadow-2xl">
+            <h3 class="text-white font-bold mb-6 text-center text-xl">اختر لون النص</h3>
+            <div class="grid grid-cols-4 gap-4 justify-items-center">
+                <div class="color-circle bg-gray-300" data-color="#e5e7eb"></div>
+                <div class="color-circle bg-red-500" data-color="#ef4444"></div>
+                <div class="color-circle bg-green-500" data-color="#22c55e"></div>
+                <div class="color-circle bg-blue-500" data-color="#3b82f6"></div>
+                <div class="color-circle bg-yellow-400" data-color="#facc15"></div>
+                <div class="color-circle bg-purple-500" data-color="#a855f7"></div>
+                <div class="color-circle bg-pink-500" data-color="#ec4899"></div>
+                <div class="color-circle bg-orange-500" data-color="#f97316"></div>
+            </div>
+            <button id="cancel-color-picker" class="mt-6 w-full py-2 bg-gray-800 text-white rounded-lg">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- نافذة التنزيل -->
+    <div id="download-modal" class="fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-md hidden z-[110]">
+        <div class="bg-gray-800 border-2 border-gray-700 rounded-3xl p-8 w-[90%] max-w-md shadow-2xl">
+            <div class="text-center mb-6">
+                <i class="fas fa-folder-open folder-gradient text-7xl md:text-8xl mb-4"></i>
+                <h2 class="text-2xl font-bold text-white mb-2">حفظ المشروع</h2>
+                <p class="text-gray-400 text-sm">سيتم تنزيل المحتوى الفعلي للملفات دون أي إضافات تلقائية</p>
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-gray-300 text-right mb-2 text-sm font-bold">اسم المشروع</label>
+                <input id="proj-name-input" type="text" placeholder="مثلاً: my-website" 
+                       class="w-full bg-black border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 text-center text-lg">
+            </div>
+
+            <div class="flex gap-4">
+                <button id="btn-save-zip" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <button id="btn-close-dl" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2">
+                    <i class="fas fa-times-circle"></i> إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة المعاينة -->
+    <div id="preview-modal" class="fixed inset-0 z-[150] hidden bg-gray-900 flex flex-col">
+        <div class="bg-black p-4 flex justify-between items-center text-white border-b border-gray-800">
+            <span class="font-bold"><i class="fas fa-eye ml-2"></i>المعاينة الحية</span>
+            <button id="close-preview-btn" class="bg-red-600 px-6 py-2 rounded-lg font-bold">إغلاق</button>
+        </div>
+        <iframe id="preview-frame" class="flex-1 bg-white border-none"></iframe>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <script>
+        const codeEditor = document.getElementById('code-editor');
+        const fileNameContainer = document.getElementById('file-name-container');
+        const brushIcon = document.getElementById('brush-icon');
+        const bgIcon = document.getElementById('bg-icon');
+
+        let currentTab = 'html';
+        const projectData = { html: '', css: '', js: '' };
+
+        function switchTab(tab) {
+            projectData[currentTab] = codeEditor.value;
+            currentTab = tab;
+            codeEditor.value = projectData[tab];
+
+            const configs = {
+                html: { title: 'index.html', color: 'text-red-500', icon: 'fa-html5' },
+                css: { title: 'style.css', color: 'text-blue-500', icon: 'fa-css3-alt' },
+                js: { title: 'script.js', color: 'text-yellow-500', icon: 'fa-js' }
+            };
+
+            const config = configs[tab];
+            fileNameContainer.innerHTML = `
+                <i class="fab ${config.icon} ${config.color} text-2xl"></i>
+                <span class="${config.color} font-bold font-mono ml-2">${config.title}</span>
+            `;
+            bgIcon.className = `fab ${config.icon} text-9xl text-gray-800`;
+            
+            ['html', 'css', 'js'].forEach(t => {
+                document.getElementById(`${t}-btn`).classList.toggle('bg-gray-800', t === tab);
+            });
+        }
+
+        document.getElementById('html-btn').addEventListener('click', () => switchTab('html'));
+        document.getElementById('css-btn').addEventListener('click', () => switchTab('css'));
+        document.getElementById('js-btn').addEventListener('click', () => switchTab('js'));
+
+        switchTab('html');
+
+        document.getElementById('brush-btn').onclick = () => document.getElementById('color-picker-dialog').classList.remove('hidden');
+        document.getElementById('cancel-color-picker').onclick = () => document.getElementById('color-picker-dialog').classList.add('hidden');
+        document.querySelectorAll('.color-circle').forEach(c => {
+            c.onclick = () => {
+                const color = c.dataset.color;
+                codeEditor.style.color = color;
+                brushIcon.style.color = color;
+                document.getElementById('color-picker-dialog').classList.add('hidden');
+            }
+        });
+
+        const dlModal = document.getElementById('download-modal');
+        const projNameInput = document.getElementById('proj-name-input');
+
+        document.getElementById('open-dl-modal').onclick = () => {
+            projectData[currentTab] = codeEditor.value;
+            dlModal.classList.remove('hidden');
+            projNameInput.focus();
+        };
+
+        document.getElementById('btn-close-dl').onclick = () => {
+            dlModal.classList.add('hidden');
+            projNameInput.value = "";
+        };
+
+        // تم تعديل هذه الوظيفة لحذف أي أكواد تلقائية (index.html, style.css, script.js)
+        document.getElementById('btn-save-zip').onclick = async () => {
+            projectData[currentTab] = codeEditor.value;
+            const name = projNameInput.value.trim() || "MyProject";
+            const zip = new JSZip();
+            const folder = zip.folder(name);
+
+            let addedFiles = 0;
+
+            // تم حذف كود إنشاء الهيكل التلقائي (index.html سيبقى كما كتبته أنت)
+            if (projectData.html.trim() !== "") {
+                folder.file("index.html", projectData.html);
+                addedFiles++;
+            }
+            if (projectData.css.trim() !== "") { 
+                folder.file("style.css", projectData.css); 
+                addedFiles++; 
+            }
+            if (projectData.js.trim() !== "") { 
+                folder.file("script.js", projectData.js); 
+                addedFiles++; 
+            }
+
+            if (addedFiles === 0) { showToast("لا توجد أكواد لحفظها!", "warning"); return; }
+
+            const content = await zip.generateAsync({type: "blob"});
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}.zip`;
+            a.click();
+            
+            dlModal.classList.add('hidden');
+            projNameInput.value = "";
+            showToast("تم الحفظ بنجاح", "success");
+        };
+
+        document.getElementById('run-btn').onclick = () => {
+            projectData[currentTab] = codeEditor.value;
+            document.getElementById('preview-modal').classList.remove('hidden');
+            const doc = document.getElementById('preview-frame').contentWindow.document;
+            doc.open();
+            // المعاينة تحتاج لدمجهم فقط للعرض، لكن الملف المحفوظ سيبقى نظيفاً
+            doc.write(`<style>${projectData.css}</style>${projectData.html}<script>${projectData.js}<\/script>`);
+            doc.close();
+        };
+
+        document.getElementById('close-preview-btn').onclick = () => document.getElementById('preview-modal').classList.add('hidden');
+
+        document.getElementById('copy-btn').onclick = () => {
+            codeEditor.select();
+            document.execCommand('copy');
+            showToast("تم النسخ", "success");
+        };
+
+        document.getElementById('paste-btn').onclick = async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                codeEditor.value += text;
+                showToast("تم اللصق", "success");
+            } catch (err) {
+                showToast("خطأ في اللصق", "warning");
+            }
+        };
+
+        document.getElementById('delete-btn').onclick = () => {
+            if(confirm("مسح الملف الحالي؟")) { codeEditor.value = ""; showToast("تم المسح", "warning"); }
+        };
+
+        document.getElementById('upload-btn').onclick = () => document.getElementById('file-upload').click();
+        document.getElementById('file-upload').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const fileName = file.name.toLowerCase();
+
+            if (fileName.endsWith('.zip')) {
+                try {
+                    const zip = new JSZip();
+                    const zipContent = await zip.loadAsync(file);
+                    let foundAny = false;
+                    for (const [path, fileObj] of Object.entries(zipContent.files)) {
+                        if (fileObj.dir) continue;
+                        const lowerPath = path.toLowerCase();
+                        if (lowerPath.endsWith('index.html')) {
+                            projectData.html = await fileObj.async("string");
+                            foundAny = true;
+                        } else if (lowerPath.endsWith('style.css')) {
+                            projectData.css = await fileObj.async("string");
+                            foundAny = true;
+                        } else if (lowerPath.endsWith('script.js')) {
+                            projectData.js = await fileObj.async("string");
+                            foundAny = true;
+                        }
+                    }
+                    if (foundAny) {
+                        codeEditor.value = projectData[currentTab];
+                        showToast("تم استيراد ملفات ZIP بنجاح", "success");
+                    } else {
+                        showToast("لم يتم العثور على ملفات متوافقة داخل ZIP", "warning");
+                    }
+                } catch (err) {
+                    showToast("فشل في قراءة ملف ZIP", "warning");
+                }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (ev) => { 
+                    codeEditor.value = ev.target.result; 
+                    showToast("تم رفع الملف النصي", "success"); 
+                };
+                reader.readAsText(file);
+            }
+            e.target.value = "";
+        };
+
+        function showToast(msg, type = 'normal') {
+            const div = document.createElement('div');
+            let bg = 'bg-gray-800';
+            if (type === 'success') bg = 'bg-green-600';
+            if (type === 'warning') bg = 'bg-red-600';
+            div.className = `fixed bottom-8 left-1/2 -translate-x-1/2 ${bg} text-white px-6 py-3 rounded-xl z-[200] animate-bounce-in shadow-xl font-bold`;
+            div.innerText = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 2500);
+        }
+    </script>
+</body>
+</html>
+
+
